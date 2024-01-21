@@ -37,7 +37,7 @@ def visualize_dfa(dfa):
     return graph
 
 
-def visualize_dfa_path(dfa, s):
+def visualize_dfa_path(dfa, s, accepted=False):
     """Visualizes a DFA path for a given string using Graphviz.
 
     Args:
@@ -55,9 +55,8 @@ def visualize_dfa_path(dfa, s):
     """
 
     # Create a DFA path for the string
-    path = []
     current_state = dfa['start_state']
-    path.append(current_state)
+    path = [current_state]
     for symbol in s:
         next_state = dfa['transitions'].get((current_state, symbol), None)
         if next_state is None:
@@ -74,19 +73,20 @@ def visualize_dfa_path(dfa, s):
         graph.node(state, shape=shape)
 
     # Add edges for transitions
+    edge_color = 'blue' if accepted else 'red'
     for (state, symbol), next_state in dfa['transitions'].items():
         # Special handling for empty string
         label = f"{symbol}" if symbol != 'λ' else 'ε'
-        graph.edge(state, next_state, label=label, color='blue' if (
+        graph.edge(state, next_state, label=label, color=edge_color if (
             state, symbol) in zip(path, s) else 'black')  # Highlight the path
 
     return graph
 
 
 def check_string_dfa(dfa, string):
+
     current_state = dfa['start_state']
     path = [current_state]  # Store the path followed
-
     for symbol in string:
         next_state = dfa['transitions'].get((current_state, symbol), None)
         if next_state is None:
