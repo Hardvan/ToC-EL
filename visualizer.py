@@ -37,7 +37,7 @@ def visualize_dfa(dfa):
     return graph
 
 
-def visualize_dfa_path(dfa, s, accepted=False):
+def visualize_dfa_path(dfa, s):
     """Visualizes a DFA path for a given string using Graphviz.
 
     Args:
@@ -54,48 +54,46 @@ def visualize_dfa_path(dfa, s, accepted=False):
         A Graphviz object representing the DFA path. 
     """
 
+    accepted = True
+
     # Create a DFA path for the string
     current_state = dfa['start_state']
     path = [current_state]
     for symbol in s:
         next_state = dfa['transitions'].get((current_state, symbol), None)
         if next_state is None:
-            return None
+            accepted = False
+            break
         current_state = next_state
         path.append(current_state)
+
+    accepted = accepted and current_state in dfa['accept_states']
+    accepted_color = 'green' if accepted else 'red'
 
     # Create a DFA path graph
     graph = gv.Digraph(format='png')
 
+    # Highlight the start state
+    graph.node(dfa['start_state'], shape='circle',
+               style='filled', fillcolor='lightblue')
+
     # Add nodes for states, highlighting accepting states
     for state in dfa['states']:
         shape = 'doublecircle' if state in dfa['accept_states'] else 'circle'
-        graph.node(state, shape=shape)
+        if state == path[-1]:  # last state in the path
+            graph.node(state, shape=shape, style='filled',
+                       fillcolor=accepted_color)
+        else:
+            graph.node(state, shape=shape)
 
     # Add edges for transitions
-    edge_color = 'blue' if accepted else 'red'
     for (state, symbol), next_state in dfa['transitions'].items():
         # Special handling for empty string
         label = f"{symbol}" if symbol != 'λ' else 'ε'
-        graph.edge(state, next_state, label=label, color=edge_color if (
+        graph.edge(state, next_state, label=label, color=accepted_color if (
             state, symbol) in zip(path, s) else 'black')  # Highlight the path
 
-    return graph
-
-
-def check_string_dfa(dfa, string):
-
-    current_state = dfa['start_state']
-    path = [current_state]  # Store the path followed
-    for symbol in string:
-        next_state = dfa['transitions'].get((current_state, symbol), None)
-        if next_state is None:
-            return False, path  # Return the path followed if the string is not accepted
-        current_state = next_state
-        path.append(current_state)  # Add the current state to the path
-
-    # Return the final result and the path followed
-    return current_state in dfa['accept_states'], path
+    return graph, accepted, path
 
 
 def visualize_nfa(nfa):
@@ -213,7 +211,8 @@ if __name__ == '__main__':
     }
 
     graph = visualize_dfa(dfa)
-    graph.render('images/dfa_visualization')  # Render and save the diagram
+    # Render and save the diagram
+    graph.render('images/dfa_visualization', cleanup=True)
 
     nfa = {
         'states': ['q0', 'q1', 'q2'],
@@ -231,7 +230,8 @@ if __name__ == '__main__':
     }
 
     graph = visualize_nfa(nfa)
-    graph.render('images/nfa_visualization')  # Render and save the diagram
+    # Render and save the diagram
+    graph.render('images/nfa_visualization', cleanup=True)
 
     e_nfa = {
         'states': ['q0', 'q1', 'q2', 'q3'],
@@ -251,12 +251,14 @@ if __name__ == '__main__':
     print(f"Epsilon closures: {e_nfa['epsilon_closures']}")
 
     graph = visualize_e_nfa(e_nfa)
-    graph.render('images/epsilon_e_nfa_visualization')
+    graph.render('images/epsilon_e_nfa_visualization', cleanup=True)
 
     s = "1000101"
-    print(f"Checking DFA accepting string {s}: {check_string_dfa(dfa, s)}")
-    s = "0010111"
-    print(f"Checking DFA accepting string {s}: {check_string_dfa(dfa, s)}")
+    graph, accepted, path = visualize_dfa_path(dfa, s)
+    print(f"String: {s}, Accepted: {accepted}, Path: {path}")
+    graph.render('images/dfa_path_visualization1', cleanup=True)
 
-    graph = visualize_dfa_path(dfa, s)
-    graph.render('images/dfa_path_visualization', cleanup=True)
+    s = "0010111"
+    graph, accepted, path = visualize_dfa_path(dfa, s)
+    print(f"String: {s}, Accepted: {accepted}, Path: {path}")
+    graph.render('images/dfa_path_visualization2', cleanup=True)
