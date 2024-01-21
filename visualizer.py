@@ -73,6 +73,9 @@ def visualize_dfa_path(dfa, s):
     # Create a DFA path graph
     graph = gv.Digraph(format='png')
 
+    # Add the string 's' at the top of the image
+    graph.node('s', label=s, shape='none', fontsize='20', fontweight='bold')
+
     # Highlight the start state
     graph.node(dfa['start_state'], shape='circle',
                style='filled', fillcolor='lightblue')
