@@ -37,6 +37,52 @@ def visualize_dfa(dfa):
     return graph
 
 
+def visualize_dfa_path(dfa, s):
+    """Visualizes a DFA path for a given string using Graphviz.
+
+    Args:
+        dfa: A dictionary representing the DFA, with the following structure:
+            - 'states': A list of states.
+            - 'alphabet': A list of input symbols.
+            - 'transitions': A dictionary of transitions, where keys are tuples
+              of (state, input symbol), and values are the next states.
+            - 'start_state': The start state.
+            - 'accept_states': A list of accepting states.
+        s: The input string to check.
+
+    Returns:
+        A Graphviz object representing the DFA path. 
+    """
+
+    # Create a DFA path for the string
+    path = []
+    current_state = dfa['start_state']
+    path.append(current_state)
+    for symbol in s:
+        next_state = dfa['transitions'].get((current_state, symbol), None)
+        if next_state is None:
+            return None
+        current_state = next_state
+        path.append(current_state)
+
+    # Create a DFA path graph
+    graph = gv.Digraph(format='png')
+
+    # Add nodes for states, highlighting accepting states
+    for state in dfa['states']:
+        shape = 'doublecircle' if state in dfa['accept_states'] else 'circle'
+        graph.node(state, shape=shape)
+
+    # Add edges for transitions
+    for (state, symbol), next_state in dfa['transitions'].items():
+        # Special handling for empty string
+        label = f"{symbol}" if symbol != 'λ' else 'ε'
+        graph.edge(state, next_state, label=label, color='blue' if (
+            state, symbol) in zip(path, s) else 'black')  # Highlight the path
+
+    return graph
+
+
 def check_string_dfa(dfa, string):
     current_state = dfa['start_state']
     path = [current_state]  # Store the path followed
@@ -48,7 +94,8 @@ def check_string_dfa(dfa, string):
         current_state = next_state
         path.append(current_state)  # Add the current state to the path
 
-    return current_state in dfa['accept_states'], path  # Return the final result and the path followed
+    # Return the final result and the path followed
+    return current_state in dfa['accept_states'], path
 
 
 def visualize_nfa(nfa):
@@ -210,3 +257,6 @@ if __name__ == '__main__':
     print(f"Checking DFA accepting string {s}: {check_string_dfa(dfa, s)}")
     s = "0010111"
     print(f"Checking DFA accepting string {s}: {check_string_dfa(dfa, s)}")
+
+    graph = visualize_dfa_path(dfa, s)
+    graph.render('images/dfa_path_visualization', cleanup=True)
