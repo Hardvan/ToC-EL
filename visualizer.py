@@ -37,6 +37,20 @@ def visualize_dfa(dfa):
     return graph
 
 
+def check_string_dfa(dfa, string):
+    current_state = dfa['start_state']
+    path = [current_state]  # Store the path followed
+
+    for symbol in string:
+        next_state = dfa['transitions'].get((current_state, symbol), None)
+        if next_state is None:
+            return False, path  # Return the path followed if the string is not accepted
+        current_state = next_state
+        path.append(current_state)  # Add the current state to the path
+
+    return current_state in dfa['accept_states'], path  # Return the final result and the path followed
+
+
 def visualize_nfa(nfa):
     """Visualizes an NFA using Graphviz.
 
@@ -191,3 +205,8 @@ if __name__ == '__main__':
 
     graph = visualize_e_nfa(e_nfa)
     graph.render('images/epsilon_e_nfa_visualization')
+
+    s = "1000101"
+    print(f"Checking DFA accepting string {s}: {check_string_dfa(dfa, s)}")
+    s = "0010111"
+    print(f"Checking DFA accepting string {s}: {check_string_dfa(dfa, s)}")
