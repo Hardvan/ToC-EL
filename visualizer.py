@@ -51,7 +51,10 @@ def visualize_dfa_path(dfa, s):
         s: The input string to check.
 
     Returns:
-        A Graphviz object representing the DFA path. 
+        A tuple containing:
+        - A Graphviz object representing the DFA path.
+        - A boolean indicating whether the string is accepted.
+        - A list of states in the path.
     """
 
     accepted = True
@@ -217,20 +220,20 @@ if __name__ == '__main__':
 
         graph = visualize_dfa(dfa)
         # Render and save the diagram
-        graph.render('images/dfa_visualization', cleanup=True)
-        print("✅ DFA visualization saved to images/dfa_visualization.png")
+        graph.render('images/dfa/dfa_visualization', cleanup=True)
+        print("\n✅ DFA visualization saved to images/dfa/dfa_visualization.png")
 
         s = "1000101"
         graph, accepted, path = visualize_dfa_path(dfa, s)
         print(f"String: {s}, Accepted: {accepted}, Path: {path}")
-        graph.render('images/dfa_path_visualization1', cleanup=True)
-        print("✅ DFA path visualization saved to images/dfa_path_visualization1.png")
+        graph.render('images/dfa/dfa_path_visualization1', cleanup=True)
+        print("\n✅ DFA path visualization saved to images/dfa/dfa_path_visualization1.png")
 
         s = "0010111"
         graph, accepted, path = visualize_dfa_path(dfa, s)
         print(f"String: {s}, Accepted: {accepted}, Path: {path}")
-        graph.render('images/dfa_path_visualization2', cleanup=True)
-        print("✅ DFA path visualization saved to images/dfa_path_visualization2.png")
+        graph.render('images/dfa/dfa_path_visualization2', cleanup=True)
+        print("\n✅ DFA path visualization saved to images/dfa/dfa_path_visualization2.png")
 
     def test_nfa():
 
@@ -251,8 +254,8 @@ if __name__ == '__main__':
 
         graph = visualize_nfa(nfa)
         # Render and save the diagram
-        graph.render('images/nfa_visualization', cleanup=True)
-        print("✅ NFA visualization saved to images/nfa_visualization.png")
+        graph.render('images/nfa/nfa_visualization', cleanup=True)
+        print("\n✅ NFA visualization saved to images/nfa/nfa_visualization.png")
 
     def test_e_nfa():
 
@@ -274,8 +277,8 @@ if __name__ == '__main__':
         print(f"Epsilon closures: {e_nfa['epsilon_closures']}")
 
         graph = visualize_e_nfa(e_nfa)
-        graph.render('images/epsilon_e_nfa_visualization', cleanup=True)
-        print("✅ Epsilon NFA visualization saved to images/epsilon_e_nfa_visualization.png")
+        graph.render('images/e_nfa/epsilon_e_nfa_visualization', cleanup=True)
+        print("\n✅ Epsilon NFA visualization saved to images/e_nfa/epsilon_e_nfa_visualization.png")
 
     test_dfa()
     test_nfa()
