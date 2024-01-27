@@ -22,16 +22,19 @@ def visualize_dfa(dfa):
     # Add nodes for states, highlighting accepting states
     for state in dfa['states']:
         shape = 'doublecircle' if state in dfa['accept_states'] else 'circle'
-        graph.node(state, shape=shape)
+        state_name = str(state)
+        graph.node(state_name, shape=shape)
 
     # Add edges for transitions
     for (state, symbol), next_state in dfa['transitions'].items():
         # Special handling for empty string
         label = f"{symbol}" if symbol != 'λ' else 'ε'
-        graph.edge(state, next_state, label=label)
+        current_state_name = str(state)
+        next_state_name = str(next_state)
+        graph.edge(current_state_name, next_state_name, label=label)
 
     # Highlight the start state
-    graph.node(dfa['start_state'], shape='circle',
+    graph.node(str(dfa['start_state']), shape='circle',
                style='filled', fillcolor='lightblue')
 
     return graph
@@ -199,6 +202,59 @@ def visualize_e_nfa(nfa):
     return graph
 
 
+def convert_nfa_to_dfa(nfa):
+    """Converts an NFA to a DFA.
+
+    Args:
+        nfa: A dictionary representing the NFA, with the following structure:
+            - 'states': A list of states.
+            - 'alphabet': A list of input symbols.
+            - 'transitions': A dictionary of transitions, where keys are tuples
+              of (state, input symbol), and values are lists of next states.
+            - 'start_state': The start state.
+            - 'accept_states': A list of accepting states.
+
+    Returns:
+        A dictionary representing the DFA.
+    """
+    dfa = {
+        'states': [],
+        'alphabet': nfa['alphabet'],
+        'transitions': {},
+        # frozenset for immutability
+        'start_state': frozenset([nfa['start_state']]),
+        'accept_states': [],
+    }
+
+    unprocessed_states = [dfa['start_state']]
+    processed_states = set()
+
+    while unprocessed_states:
+        current_dfa_state = unprocessed_states.pop()
+        processed_states.add(current_dfa_state)
+
+        for symbol in dfa['alphabet']:
+            next_states = set()
+
+            for nfa_state in current_dfa_state:
+                next_states |= set(
+                    nfa['transitions'].get((nfa_state, symbol), []))
+
+            next_dfa_state = frozenset(next_states)
+
+            if next_dfa_state not in processed_states.union(unprocessed_states):
+                unprocessed_states.append(next_dfa_state)
+
+            dfa['transitions'][(current_dfa_state, symbol)] = next_dfa_state
+
+            if any(state in nfa['accept_states'] for state in next_dfa_state):
+                dfa['accept_states'].append(next_dfa_state)
+
+    dfa['states'] = list(processed_states)
+
+    return dfa
+
+
 if __name__ == '__main__':
 
     def test_dfa():
@@ -256,6 +312,11 @@ if __name__ == '__main__':
         # Render and save the diagram
         graph.render('images/nfa/nfa_visualization', cleanup=True)
         print("\n✅ NFA visualization saved to images/nfa/nfa_visualization.png")
+
+        dfa = convert_nfa_to_dfa(nfa)
+        graph = visualize_dfa(dfa)
+        # Render and save the diagram
+        graph.render('images/nfa/conversion_to_dfa', cleanup=True)
 
     def test_e_nfa():
 
