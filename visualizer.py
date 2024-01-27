@@ -252,6 +252,29 @@ def convert_nfa_to_dfa(nfa):
 
     dfa['states'] = list(processed_states)
 
+    print("DFA: ", dfa)
+
+    # Convert frozenset states to alphabet labels
+    state_to_alphabet = {}
+    for i, state in enumerate(dfa['states']):
+        alphabet_label = chr(ord('A') + i)
+        state_to_alphabet[state] = alphabet_label
+
+    dfa['start_state'] = state_to_alphabet[dfa['start_state']]
+    dfa['accept_states'] = [state_to_alphabet[state]
+                            for state in dfa['accept_states']]
+    dfa['states'] = [state_to_alphabet[state] for state in dfa['states']]
+
+    # Replace states in transitions by alphabet labels
+    new_transitions = {}
+    for (state, symbol), next_state in dfa['transitions'].items():
+        new_transitions[(state_to_alphabet[state], symbol)
+                        ] = state_to_alphabet[next_state]
+
+    dfa['transitions'] = new_transitions
+
+    print("\n New DFA: ", dfa)
+
     return dfa
 
 
