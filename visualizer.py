@@ -198,70 +198,85 @@ def visualize_e_nfa(nfa):
 
 if __name__ == '__main__':
 
-    dfa = {
-        'states': ['q0', 'q1', 'q2'],
-        'alphabet': ['0', '1'],
-        'transitions': {
-            ('q0', '0'): 'q0',
-            ('q0', '1'): 'q1',
-            ('q1', '0'): 'q2',
-            ('q1', '1'): 'q0',
-            ('q2', '0'): 'q1',
-            ('q2', '1'): 'q2'
-        },
-        'start_state': 'q0',
-        'accept_states': ['q2']
-    }
+    def test_dfa():
 
-    graph = visualize_dfa(dfa)
-    # Render and save the diagram
-    graph.render('images/dfa_visualization', cleanup=True)
+        dfa = {
+            'states': ['q0', 'q1', 'q2'],
+            'alphabet': ['0', '1'],
+            'transitions': {
+                ('q0', '0'): 'q0',
+                ('q0', '1'): 'q1',
+                ('q1', '0'): 'q2',
+                ('q1', '1'): 'q0',
+                ('q2', '0'): 'q1',
+                ('q2', '1'): 'q2'
+            },
+            'start_state': 'q0',
+            'accept_states': ['q2']
+        }
 
-    nfa = {
-        'states': ['q0', 'q1', 'q2'],
-        'alphabet': ['0', '1'],
-        'transitions': {
-            ('q0', '0'): ['q0', 'q1'],  # Multiple next states for '0'
-            ('q0', '1'): ['q1'],
-            ('q1', '0'): ['q2'],
-            ('q1', '1'): ['q0'],
-            ('q2', '0'): [],  # No transitions for '0' from q2
-            ('q2', '1'): ['q2']
-        },
-        'start_state': 'q0',
-        'accept_states': ['q2']
-    }
+        graph = visualize_dfa(dfa)
+        # Render and save the diagram
+        graph.render('images/dfa_visualization', cleanup=True)
+        print("✅ DFA visualization saved to images/dfa_visualization.png")
 
-    graph = visualize_nfa(nfa)
-    # Render and save the diagram
-    graph.render('images/nfa_visualization', cleanup=True)
+        s = "1000101"
+        graph, accepted, path = visualize_dfa_path(dfa, s)
+        print(f"String: {s}, Accepted: {accepted}, Path: {path}")
+        graph.render('images/dfa_path_visualization1', cleanup=True)
+        print("✅ DFA path visualization saved to images/dfa_path_visualization1.png")
 
-    e_nfa = {
-        'states': ['q0', 'q1', 'q2', 'q3'],
-        'alphabet': ['a', 'b'],
-        'transitions': {
-            ('q0', 'λ'): ['q1', 'q3'],
-            ('q1', 'a'): ['q2'],
-            ('q2', 'b'): ['q0'],
-            ('q3', 'b'): ['q2']
-        },
-        'start_state': 'q0',
-        'accept_states': ['q2']
-    }
+        s = "0010111"
+        graph, accepted, path = visualize_dfa_path(dfa, s)
+        print(f"String: {s}, Accepted: {accepted}, Path: {path}")
+        graph.render('images/dfa_path_visualization2', cleanup=True)
+        print("✅ DFA path visualization saved to images/dfa_path_visualization2.png")
 
-    # Calculate epsilon closures (optional, if not already provided in e_nfa)
-    e_nfa['epsilon_closures'] = calculate_epsilon_closures(e_nfa)
-    print(f"Epsilon closures: {e_nfa['epsilon_closures']}")
+    def test_nfa():
 
-    graph = visualize_e_nfa(e_nfa)
-    graph.render('images/epsilon_e_nfa_visualization', cleanup=True)
+        nfa = {
+            'states': ['q0', 'q1', 'q2'],
+            'alphabet': ['0', '1'],
+            'transitions': {
+                ('q0', '0'): ['q0', 'q1'],  # Multiple next states for '0'
+                ('q0', '1'): ['q1'],
+                ('q1', '0'): ['q2'],
+                ('q1', '1'): ['q0'],
+                ('q2', '0'): [],  # No transitions for '0' from q2
+                ('q2', '1'): ['q2']
+            },
+            'start_state': 'q0',
+            'accept_states': ['q2']
+        }
 
-    s = "1000101"
-    graph, accepted, path = visualize_dfa_path(dfa, s)
-    print(f"String: {s}, Accepted: {accepted}, Path: {path}")
-    graph.render('images/dfa_path_visualization1', cleanup=True)
+        graph = visualize_nfa(nfa)
+        # Render and save the diagram
+        graph.render('images/nfa_visualization', cleanup=True)
+        print("✅ NFA visualization saved to images/nfa_visualization.png")
 
-    s = "0010111"
-    graph, accepted, path = visualize_dfa_path(dfa, s)
-    print(f"String: {s}, Accepted: {accepted}, Path: {path}")
-    graph.render('images/dfa_path_visualization2', cleanup=True)
+    def test_e_nfa():
+
+        e_nfa = {
+            'states': ['q0', 'q1', 'q2', 'q3'],
+            'alphabet': ['a', 'b'],
+            'transitions': {
+                ('q0', 'λ'): ['q1', 'q3'],
+                ('q1', 'a'): ['q2'],
+                ('q2', 'b'): ['q0'],
+                ('q3', 'b'): ['q2']
+            },
+            'start_state': 'q0',
+            'accept_states': ['q2']
+        }
+
+        # Calculate epsilon closures (optional, if not already provided in e_nfa)
+        e_nfa['epsilon_closures'] = calculate_epsilon_closures(e_nfa)
+        print(f"Epsilon closures: {e_nfa['epsilon_closures']}")
+
+        graph = visualize_e_nfa(e_nfa)
+        graph.render('images/epsilon_e_nfa_visualization', cleanup=True)
+        print("✅ Epsilon NFA visualization saved to images/epsilon_e_nfa_visualization.png")
+
+    test_dfa()
+    test_nfa()
+    test_e_nfa()
