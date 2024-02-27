@@ -278,6 +278,91 @@ def convert_nfa_to_dfa(nfa):
     return dfa
 
 
+def visualize_rg(rg):
+    """Visualizes a Regular Grammar using Graphviz.
+
+    Args:
+        rg: A dictionary representing the Regular Grammar, with the following structure:
+            - 'variables': A list of variables.
+            - 'terminals': A list of terminal symbols.
+            - 'productions': A dictionary of productions, where keys are variables
+              and values are lists of right-hand side strings.
+            - 'start_variable': The start variable.
+
+    Returns:
+        A Graphviz object representing the Regular Grammar.
+    """
+
+    graph = gv.Digraph(format='png')  # Choose a suitable output format
+
+    # Add nodes for variables
+    for variable in rg['variables']:
+        shape = 'doublecircle' if variable == rg['start_variable'] else 'circle'
+        graph.node(variable, shape=shape)
+
+    # Add edges for productions
+    for variable, productions in rg['productions'].items():
+        for production in productions:
+            graph.edge(variable, production)
+
+    return graph
+
+
+def convert_rg_to_dfa(rg):
+    """Converts a Regular Grammar to a DFA.
+
+    Args:
+        rg: A dictionary representing the Regular Grammar, with the following structure:
+            - 'variables': A list of variables.
+            - 'terminals': A list of terminal symbols.
+            - 'productions': A dictionary of productions, where keys are variables
+              and values are lists of right-hand side strings.
+            - 'start_variable': The start variable.
+
+    Returns:
+        A dictionary representing the DFA.
+    """
+
+    dfa = {
+        'states': [],
+        'alphabet': rg['terminals'],
+        'transitions': {},
+        'start_state': rg['start_variable'],
+        'accept_states': [],
+    }
+
+    unprocessed_states = [dfa['start_state']]
+    processed_states = set()
+
+    while unprocessed_states:
+        current_dfa_state = unprocessed_states.pop()
+        processed_states.add(current_dfa_state)
+
+        for symbol in dfa['alphabet']:
+            next_state = None
+            for variable, productions in rg['productions'].items():
+                for production in productions:
+                    if production[0] == symbol and variable == current_dfa_state:
+                        next_state = production[1:]
+                        break
+                if next_state:
+                    break
+
+            if next_state not in processed_states.union(unprocessed_states):
+                unprocessed_states.append(next_state)
+
+            dfa['transitions'][(current_dfa_state, symbol)] = next_state
+
+            if next_state == '':
+                dfa['accept_states'].append(current_dfa_state)
+
+    dfa['states'] = list(processed_states)
+
+    print("DFA: ", dfa)
+
+    return dfa
+
+
 if __name__ == '__main__':
 
     def test_dfa():
@@ -297,17 +382,20 @@ if __name__ == '__main__':
             'accept_states': ['q2']
         }
 
+        # 1) Visualize the DFA
         graph = visualize_dfa(dfa)
         # Render and save the diagram
         graph.render('images/dfa/dfa_visualization', cleanup=True)
         print("\n✅ DFA visualization saved to images/dfa/dfa_visualization.png")
 
+        # 2) Visualize the DFA path for a given string (rejected case)
         s = "1000101"
         graph, accepted, path = visualize_dfa_path(dfa, s)
         print(f"String: {s}, Accepted: {accepted}, Path: {path}")
         graph.render('images/dfa/dfa_path_visualization1', cleanup=True)
         print("\n✅ DFA path visualization saved to images/dfa/dfa_path_visualization1.png")
 
+        # 3) Visualize the DFA path for a given string (accepted case)
         s = "0010111"
         graph, accepted, path = visualize_dfa_path(dfa, s)
         print(f"String: {s}, Accepted: {accepted}, Path: {path}")
@@ -331,11 +419,13 @@ if __name__ == '__main__':
             'accept_states': ['q2']
         }
 
+        # 1) Visualize the NFA
         graph = visualize_nfa(nfa)
         # Render and save the diagram
         graph.render('images/nfa/nfa_visualization', cleanup=True)
         print("\n✅ NFA visualization saved to images/nfa/nfa_visualization.png")
 
+        # 2) Convert the NFA to a DFA and visualize the result
         dfa = convert_nfa_to_dfa(nfa)
         graph = visualize_dfa(dfa)
         # Render and save the diagram
@@ -360,10 +450,37 @@ if __name__ == '__main__':
         e_nfa['epsilon_closures'] = calculate_epsilon_closures(e_nfa)
         print(f"Epsilon closures: {e_nfa['epsilon_closures']}")
 
+        # 1) Visualize the Epsilon NFA
         graph = visualize_e_nfa(e_nfa)
         graph.render('images/e_nfa/epsilon_e_nfa_visualization', cleanup=True)
         print("\n✅ Epsilon NFA visualization saved to images/e_nfa/epsilon_e_nfa_visualization.png")
 
+    def test_rg():
+        # Regular Grammar (Language is aⁿbⁿ, n >= 0)
+        rg = {
+            'variables': ['S'],
+            'terminals': ['a', 'b'],
+            'productions': {
+                'S': ['aS', 'bS', 'λ'],
+            },
+            'start_variable': 'S'
+        }
+
+        # 1) Visualize the Regular Grammar
+        graph = visualize_rg(rg)
+        # Render and save the diagram
+        graph.render('images/rg/rg_visualization', cleanup=True)
+        print("\n✅ Regular Grammar visualization saved to images/rg/rg_visualization.png")
+
+        # 2) Convert the Regular Grammar to a DFA and visualize the result
+        dfa = convert_rg_to_dfa(rg)
+        graph = visualize_dfa(dfa)
+        # Render and save the diagram
+        graph.render('images/rg/conversion_to_dfa', cleanup=True)
+        print(
+            "\n✅ Conversion to DFA visualization saved to images/rg/conversion_to_dfa.png")
+
     test_dfa()
     test_nfa()
     test_e_nfa()
+    test_rg()
