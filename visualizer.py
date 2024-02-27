@@ -363,6 +363,44 @@ def convert_rg_to_dfa(rg):
     return dfa
 
 
+def convert_dfa_to_rg(dfa):
+    """Converts a DFA to a Regular Grammar.
+
+    Args:
+        dfa: A dictionary representing the DFA, with the following structure:
+            - 'states': A list of states.
+            - 'alphabet': A list of input symbols.
+            - 'transitions': A dictionary of transitions, where keys are tuples
+              of (state, input symbol), and values are the next states.
+            - 'start_state': The start state.
+            - 'accept_states': A list of accepting states.
+
+    Returns:
+        A dictionary representing the Regular Grammar.
+    """
+
+    rg = {
+        'variables': dfa['states'],
+        'terminals': dfa['alphabet'],
+        'productions': {},
+        'start_variable': dfa['start_state'],
+    }
+
+    for state in dfa['states']:
+        rg['productions'][state] = []
+        for symbol in dfa['alphabet']:
+            next_state = dfa['transitions'].get((state, symbol))
+            if next_state:  # Non-empty transition
+                rg['productions'][state].append(symbol + next_state)
+            else:  # Empty transition
+                rg['productions'][state].append(symbol)
+
+        if state in dfa['accept_states']:  # Add epsilon production for final states
+            rg['productions'][state].append('ε')
+
+    return rg
+
+
 if __name__ == '__main__':
 
     def test_dfa():
@@ -456,6 +494,7 @@ if __name__ == '__main__':
         print("\n✅ Epsilon NFA visualization saved to images/e_nfa/epsilon_e_nfa_visualization.png")
 
     def test_rg():
+
         # Regular Grammar (Language is aⁿbⁿ, n >= 0)
         rg = {
             'variables': ['S'],
@@ -479,6 +518,37 @@ if __name__ == '__main__':
         graph.render('images/rg/conversion_to_dfa', cleanup=True)
         print(
             "\n✅ Conversion to DFA visualization saved to images/rg/conversion_to_dfa.png")
+
+        # DFA to RG (Language contains substring 'aba')
+        dfa = {
+            'states': ['A', 'B', 'C', 'D'],
+            'alphabet': ['a', 'b'],
+            'transitions': {
+                ('A', 'a'): 'B',
+                ('A', 'b'): 'A',
+                ('B', 'a'): 'B',
+                ('B', 'b'): 'C',
+                ('C', 'a'): 'D',
+                ('C', 'b'): 'A',
+                ('D', 'a'): 'D',
+                ('D', 'b'): 'D'
+            },
+            'start_state': 'A',
+            'accept_states': ['D']
+        }
+
+        # 1) Visualize the DFA
+        graph = visualize_dfa(dfa)
+        # Render and save the diagram
+        graph.render('images/rg/dfa_visualization', cleanup=True)
+        print("\n✅ DFA visualization saved to images/rg/dfa_visualization.png")
+
+        # 2) Convert the DFA to a Regular Grammar and visualize the result
+        rg = convert_dfa_to_rg(dfa)
+        graph = visualize_rg(rg)
+        # Render and save the diagram
+        graph.render('images/rg/conversion_to_rg', cleanup=True)
+        print("\n✅ Conversion to Regular Grammar visualization saved to images/rg/conversion_to_rg.png")
 
     test_dfa()
     test_nfa()
