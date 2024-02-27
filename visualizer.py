@@ -401,6 +401,46 @@ def convert_dfa_to_rg(dfa):
     return rg
 
 
+def visualize_pda(pda):
+    """Visualizes a PDA using Graphviz.
+
+    Args:
+        pda: A dictionary representing the PDA, with the following structure:
+            - 'states': A list of states.
+            - 'alphabet': A list of input symbols.
+            - 'stack_alphabet': A list of stack symbols
+            - 'transitions': A dictionary of transitions, where keys are tuples
+                of (state, input symbol, stack symbol), and values are lists of
+                tuples of (next state, stack symbols to push).
+            - 'start_state': The start state.
+            - 'start_stack': The start stack symbol.
+            - 'accept_states': A list of accepting states.
+
+    Returns:
+        A Graphviz object representing the PDA.
+    """
+
+    # Increase the size of the graph
+    graph = gv.Digraph(format='png')
+
+    # Add nodes for states, highlighting accepting states
+    for state in pda['states']:
+        shape = 'doublecircle' if state in pda['accept_states'] else 'circle'
+        graph.node(state, shape=shape)
+
+    # Add edges for transitions, handling multiple next states
+    for (state, symbol, stack_top), next_states in pda['transitions'].items():
+        for next_state, push_symbol in next_states:
+            label = f"{symbol},{stack_top} | {push_symbol}"
+            graph.edge(state, next_state, label=label)
+
+    # Highlight the start state
+    graph.node(pda['start_state'], shape='circle',
+               style='filled', fillcolor='lightblue')
+
+    return graph
+
+
 if __name__ == '__main__':
 
     def test_dfa():
@@ -495,7 +535,7 @@ if __name__ == '__main__':
 
     def test_rg():
 
-        # Regular Grammar (Language is aⁿbⁿ, n >= 0)
+        # Regular Grammar (Language is any no. of 'a's and 'b's)
         rg = {
             'variables': ['S'],
             'terminals': ['a', 'b'],
@@ -550,7 +590,33 @@ if __name__ == '__main__':
         graph.render('images/rg/conversion_to_rg', cleanup=True)
         print("\n✅ Conversion to Regular Grammar visualization saved to images/rg/conversion_to_rg.png")
 
+    def test_pda():
+
+        # PDA for aⁿbⁿ, n >= 0
+        pda = {
+            'states': ['q0', 'q1', 'qf'],
+            'alphabet': ['a', 'b'],
+            'stack_alphabet': ['a', 'Z'],
+            'transitions': {
+                ('q0', 'a', 'Z'): [('q0', 'aZ')],
+                ('q0', 'a', 'a'): [('q0', 'aa')],
+                ('q0', 'b', 'a'): [('q1', 'ε')],
+                ('q1', 'b', 'a'): [('q1', 'ε')],
+                ('q1', 'ε', 'Z'): [('qf', 'Z')]
+            },
+            'start_state': 'q0',
+            'start_stack': 'Z',
+            'accept_states': ['qf']
+        }
+
+        # 1) Visualize the PDA
+        graph = visualize_pda(pda)
+        # Render and save the diagram
+        graph.render('images/pda/pda_visualization', cleanup=True)
+        print("\n✅ PDA visualization saved to images/pda/pda_visualization.png")
+
     test_dfa()
     test_nfa()
     test_e_nfa()
     test_rg()
+    test_pda()
