@@ -41,3 +41,7 @@ DFA Visualization for language containing substring 'aba'
 DFA to RG for language containing substring 'aba'
 
 ![DFA to RG](./images/rg/conversion_to_rg.png)
+
+PDA Visualization for L = {aⁿbⁿ | n ≥ 1}
+
+![PDA](./images/pda/pda_visualization.png)
