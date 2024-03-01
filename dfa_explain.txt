@@ -1,0 +1,9 @@
+Create a Graphviz object: The function starts by creating a new Graphviz object (graph) with the specified output format ('png'). This object will be used to represent the NFA graphically.
+
+Add nodes for states: For each state in the NFA, the function adds a node to the graph. It uses the state number as the node name and determines the shape of the node based on whether the state is an accepting state or not. Accepting states are represented with a 'doublecircle' shape, while non-accepting states are represented with a 'circle' shape.
+
+Add edges for transitions: Next, the function iterates over each transition in the NFA and adds an edge to the graph. It uses the 'label' parameter to display the input symbol for the transition. If the input symbol is the empty string ('λ'), it displays 'ε' instead. For NFAs, transitions can lead to multiple next states, so the function creates an edge for each next state.
+
+Highlight the start state: The function highlights the start state of the NFA by adding a filled node with a light blue color. This helps visually identify the start state in the graph.
+
+Return the Graphviz object: Finally, the function returns the completed Graphviz object representing the NFA. This object can be further processed or rendered to generate a graphical representation of the NFA using Graphviz tools.
