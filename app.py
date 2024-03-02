@@ -42,7 +42,6 @@ def dfa_visualize():
     print(f"\n✅ DFA path visualization saved to {save_path_trace}.png")
 
     return render_template("index.html",
-                           result=True,
                            dfa_visualization=f"{save_path_dfa}.png",
                            dfa_path_visualization=f"{save_path_trace}.png",
                            accepted=accepted, path=path)
@@ -75,9 +74,35 @@ def nfa_visualize():
     print(f"\n✅ NFA to DFA visualization saved to {save_path_dfa}.png")
 
     return render_template("index.html",
-                           result=True,
                            nfa_visualization=f"{save_path_nfa}.png",
                            nfa_to_dfa_visualization=f"{save_path_dfa}.png")
+
+
+@app.route('/enfa_visualize', methods=['POST'])
+def enfa_visualize():
+
+    states = request.form['states']
+    alphabets = request.form['alphabets']
+    transitions = request.form['transitions']
+    start = request.form['start']
+    final = request.form['final']
+
+    e_nfa = preprocess_enfa(states, alphabets, transitions, start, final)
+
+    # Calculate epsilon closures (optional, if not already provided in e_nfa)
+    e_nfa['epsilon_closures'] = visualizer.calculate_epsilon_closures(e_nfa)
+    print(f"Epsilon closures: {e_nfa['epsilon_closures']}")
+
+    # 1) Visualize the e-NFA
+    graph = visualizer.visualize_e_nfa(e_nfa)
+    save_path_enfa = 'static/output/enfa/enfa_visualization'
+    # Render and save the diagram
+    graph.render(save_path_enfa, cleanup=True)
+    print(f"\n✅ e-NFA visualization saved to {save_path_enfa}.png")
+
+    return render_template("index.html",
+                           epsilon_closures=e_nfa['epsilon_closures'],
+                           enfa_visualization=f"{save_path_enfa}.png")
 
 
 def preprocess_dfa(states, alphabets, transitions, start, final):
@@ -126,13 +151,27 @@ def preprocess_dfa(states, alphabets, transitions, start, final):
         'start_state': start,
         'accept_states': final
     }
-    
+
     print(f"DFA: {dfa}")
 
     return dfa
 
 
 def preprocess_nfa(states, alphabets, transitions, start, final):
+    """nfa = {
+            'states': ['q0', 'q1', 'q2'],
+            'alphabet': ['0', '1'],
+            'transitions': {
+                ('q0', '0'): ['q0', 'q1'],  # Multiple next states for '0'
+                ('q0', '1'): ['q1'],
+                ('q1', '0'): ['q2'],
+                ('q1', '1'): ['q0'],
+                ('q2', '1'): ['q2']
+            },
+            'start_state': 'q0',
+            'accept_states': ['q2']
+        }
+    """
 
     # Preprocessing
     states = states.split(',')  # ['q0', ' q1 ', ' q2 ', ' qf ']
@@ -163,10 +202,57 @@ def preprocess_nfa(states, alphabets, transitions, start, final):
         'start_state': start,
         'accept_states': final
     }
-    
+
     print(f"NFA: {nfa}")
 
     return nfa
+
+
+def preprocess_enfa(states, alphabets, transitions, start, final):
+    """e_nfa = {
+            'states': ['q0', 'q1', 'q2', 'q3'],
+            'alphabet': ['a', 'b'],
+            'transitions': {
+                ('q0', 'λ'): ['q1', 'q3'],
+                ('q1', 'a'): ['q2'],
+                ('q2', 'b'): ['q0'],
+                ('q3', 'b'): ['q2']
+            },
+            'start_state': 'q0',
+            'accept_states': ['q2']
+        }
+    """
+
+    states = states.split(',')
+    states = [s.strip() for s in states]
+
+    alphabets = alphabets.split(',')
+    alphabets = [a.strip() for a in alphabets]
+
+    transitions = transitions.split(';')
+    transitions = [t.strip() for t in transitions]
+    transitions = [t.split(',') for t in transitions]
+    transitions = [[t.strip() for t in transition]
+                   for transition in transitions]
+    transitions_dict = {}
+    for t in transitions:
+        transitions_dict[(t[0], t[1])] = t[2:]
+
+    start = start.strip()
+    final = final.split(',')
+    final = [f.strip() for f in final]
+
+    e_nfa = {
+        'states': states,
+        'alphabet': alphabets,
+        'transitions': transitions_dict,
+        'start_state': start,
+        'accept_states': final
+    }
+
+    print(f"e-NFA: {e_nfa}")
+
+    return e_nfa
 
 
 if __name__ == "__main__":
