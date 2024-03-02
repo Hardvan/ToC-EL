@@ -258,44 +258,125 @@
               <br />
             </ol>
 
-            <h1 class="text-dark" style="font-size: 50px">
-              Let's try Visualising
+            <form action="/dfa_visualize" method="POST">
+              <h1 class="text-dark" style="font-size: 50px">
+                Let's try Visualising
+              </h1>
+              <br />
+              <!-- Default: DFA to accept substring "aba" -->
+              <div class="mb-3">
+                <label class="form-label text-dark"
+                  >Enter the states (comma-separated):</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  name="states"
+                  value="q0, q1, q2, qf"
+                />
+              </div>
+              <br />
+              <div class="mb-3">
+                <label class="form-label text-dark"
+                  >Enter the input alphabets:</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  name="alphabets"
+                  value="a, b"
+                />
+              </div>
+              <br />
+              <div class="mb-3">
+                <label class="form-label text-dark"
+                  >Enter the transitions (semicolon-separated):</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  name="transitions"
+                  value="q0, a, q1; q1, b, q2; q2, a, qf"
+                />
+              </div>
+              <br />
+              <div class="mb-3">
+                <label class="form-label text-dark"
+                  >Enter the start state:</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  name="start"
+                  value="q0"
+                />
+              </div>
+              <br />
+              <div class="mb-3">
+                <label class="form-label text-dark"
+                  >Enter the final state(s):</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  name="final"
+                  value="qf"
+                />
+              </div>
+              <!-- Input string -->
+              <div class="mb-3">
+                <label class="form-label text-dark"
+                  >Enter an example input string:</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  name="input_string"
+                  value="ababab"
+                />
+              </div>
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Display Results:
+          dfa_visualization=f"{save_path_dfa}.png",
+          dfa_path_visualization=f"{save_path_trace}.png",
+          accepted=accepted, path=path
+        -->
+        {% if dfa_visualization %}
+        <div class="row justify-content-center">
+          <div class="col-8 bg-blue p-4">
+            <h1 class="text-dark text-center" style="font-size: 20px">
+              <b>Results</b>
             </h1>
-            <br />
             <div class="mb-3">
-              <label class="form-label text-dark">Enter the states:</label>
-              <input type="text" class="form-control" />
-            </div>
-            <br />
-            <div class="mb-3">
+              <label class="form-label text-dark">DFA Visualization:</label>
+              <img
+                src="{{ dfa_visualization }}"
+                alt="DFA Visualization"
+                class="img-fluid"
+              />
+              <br />
               <label class="form-label text-dark"
-                >Enter the input alphabets:</label
+                >DFA Path Visualization:</label
               >
-              <input type="text" class="form-control" />
-            </div>
-            <br />
-            <div class="mb-3">
-              <label class="form-label text-dark"
-                >Enter the transitions :</label
-              >
-              <input type="text" class="form-control" />
-            </div>
-            <br />
-            <div class="mb-3">
-              <label class="form-label text-dark">Enter the start state:</label>
-              <input type="text" class="form-control" />
-            </div>
-
-            <br />
-
-            <div class="mb-3">
-              <label class="form-label text-dark"
-                >Enter the final state :</label
-              >
-              <input type="text" class="form-control" />
+              <img
+                src="{{ dfa_path_visualization }}"
+                alt="DFA Path Visualization"
+                class="img-fluid"
+              />
+              <br />
+              <label class="form-label text-dark">Accepted:</label>
+              <p>{{ accepted }}</p>
+              <br />
+              <label class="form-label text-dark">Path:</label>
+              <p>{{ path }}</p>
             </div>
           </div>
         </div>
+        {% endif %}
       </div>
 
       <div class="container">
@@ -362,43 +443,108 @@
               <br />
             </ol>
 
-            <h1 class="text-dark" style="font-size: 50px">
-              Let's try Visualising
-            </h1>
-            <br />
-            <div class="mb-3">
-              <label class="form-label text-dark">Enter the states:</label>
-              <input type="text" class="form-control" />
-            </div>
-            <br />
-            <div class="mb-3">
-              <label class="form-label text-dark"
-                >Enter the input alphabets:</label
-              >
-              <input type="text" class="form-control" />
-            </div>
-            <br />
-            <div class="mb-3">
-              <label class="form-label text-dark"
-                >Enter the transitions :</label
-              >
-              <input type="text" class="form-control" />
-            </div>
-            <br />
-            <div class="mb-3">
-              <label class="form-label text-dark">Enter the start state:</label>
-              <input type="text" class="form-control" />
-            </div>
-            <br />
+            <form action="/nfa_visualize" method="POST">
+              <h1 class="text-dark" style="font-size: 50px">
+                Let's try Visualising
+              </h1>
+              <br />
+              <!-- Default: NFA: 0*1* -->
+              <div class="mb-3">
+                <label class="form-label text-dark"
+                  >Enter the states (comma-separated):</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  name="states"
+                  value="q0, q1"
+                />
+              </div>
+              <br />
+              <div class="mb-3">
+                <label class="form-label text-dark"
+                  >Enter the input alphabets:</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  name="alphabets"
+                  value="0, 1"
+                />
+              </div>
+              <br />
+              <div class="mb-3">
+                <label class="form-label text-dark"
+                  >Enter the transitions :</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  name="transitions"
+                  value="q0, 0, q0; q0, 1, q1; q1, 1, q1"
+                />
+              </div>
+              <br />
+              <div class="mb-3">
+                <label class="form-label text-dark"
+                  >Enter the start state:</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  name="start"
+                  value="q0"
+                />
+              </div>
+              <br />
 
+              <div class="mb-3">
+                <label class="form-label text-dark"
+                  >Enter the final state(s):</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  name="final"
+                  value="q0, q1"
+                />
+              </div>
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Display Results:
+          result=True,
+          nfa_visualization=f"{save_path_nfa}.png",
+          nfa_to_dfa_visualization=f"{save_path_dfa}.png"
+        -->
+        {% if nfa_visualization %}
+        <div class="row justify-content-center">
+          <div class="col-8 bg-blue p-4">
+            <h1 class="text-dark text-center" style="font-size: 20px">
+              <b>Results</b>
+            </h1>
             <div class="mb-3">
+              <label class="form-label text-dark">NFA Visualization:</label>
+              <img
+                src="{{ nfa_visualization }}"
+                alt="NFA Visualization"
+                class="img-fluid"
+              />
+              <br />
               <label class="form-label text-dark"
-                >Enter the final state :</label
+                >NFA to DFA Visualization:</label
               >
-              <input type="text" class="form-control" />
+              <img
+                src="{{ nfa_to_dfa_visualization }}"
+                alt="NFA to DFA Visualization"
+                class="img-fluid"
+              />
             </div>
           </div>
         </div>
+        {% endif %}
       </div>
 
       <div class="container">
