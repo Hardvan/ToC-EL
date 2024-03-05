@@ -720,6 +720,390 @@
         </div>
         {% endif %}
       </div>
+
+
+
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-8 bg-blue p-4">
+            <h1 class="text-dark text-center" style="font-size: 20px">
+              <b>Steps for converting DFA to Regular Grammar</b>
+            </h1>
+            <ol class="list-group list-group-numbered">
+              <li
+                class="list-group-item list-group-item-light"
+                style="background-color: rgb(181, 89, 238); color: white"
+              >
+              The function convert_dfa_to_rg converts a Deterministic Finite Automaton (DFA) to a Regular Grammar (RG).
+              </li>
+              <br />
+              <li
+                class="list-group-item list-group-item-light"
+                style="background-color: rgb(181, 89, 238); color: white"
+              >
+              It takes a dictionary dfa representing the DFA with keys 'states', 'alphabet', 'transitions', 'start_state', and 'accept_states'.
+              </li>
+              <br />
+              <li
+                class="list-group-item list-group-item-light"
+                style="background-color: rgb(181, 89, 238); color: white"
+              >
+              The output is a dictionary representing the RG with keys 'variables', 'terminals', 'productions', and 'start_variable'.
+              </li>
+              <br />
+              <li
+                class="list-group-item list-group-item-light"
+                style="background-color: rgb(181, 89, 238); color: white"
+              >
+              For each state in the DFA, the function creates productions in the RG based on transitions and accepting states.
+              </li>
+              <br />
+              <li
+                class="list-group-item list-group-item-light"
+                style="background-color: rgb(181, 89, 238); color: white"
+              >
+              It handles non-empty transitions by appending the symbol and the next state to the production.
+              It handles empty transitions by appending just the symbol to the production.
+              It adds an epsilon production for final states in the DFA.
+              The RG produced by the function represents a grammar equivalent to the input DFA
+              </li>
+              <br />
+            </ol>
+
+            <form action="/nfa_visualize" method="POST">
+              <h1 class="text-dark" style="font-size: 50px">
+                Let's try Visualising
+              </h1>
+              <br />
+              <!-- Default: NFA: 0*1* -->
+              <div class="mb-3">
+                <label class="form-label text-dark"
+                  >Enter the states (comma-separated):</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  name="states"
+                  
+                />
+              </div>
+              <br />
+              <div class="mb-3">
+                <label class="form-label text-dark"
+                  >Enter the input alphabets:</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  name="alphabets"
+                  
+                />
+              </div>
+              <br />
+              <div class="mb-3">
+                <label class="form-label text-dark"
+                  >Enter the transitions :</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  name="transitions"
+                  
+                />
+              </div>
+              <br />
+              <div class="mb-3">
+                <label class="form-label text-dark"
+                  >Enter the start state:</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  name="start"
+                
+                />
+              </div>
+              <br />
+
+              <div class="mb-3">
+                <label class="form-label text-dark"
+                  >Enter the final state(s):</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  name="final"
+                
+                />
+              </div>
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+          </div>
+        </div>
+       
+        
+
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-8 bg-blue p-4">
+              <h1 class="text-dark text-center" style="font-size: 20px">
+                <b>Steps for converting Regular grammar to DFA </b>
+              </h1>
+              <ol class="list-group list-group-numbered">
+                <li
+                  class="list-group-item list-group-item-light"
+                  style="background-color: rgb(64, 163, 7); color: white"
+                >
+                Initialize the DFA dictionary with empty lists for states and accept states, the RG terminals as the alphabet, the start variable of the RG as the start state, and an empty transitions dictionary.
+                </li>
+                <br />
+                <li
+                  class="list-group-item list-group-item-light"
+                  style="background-color: rgb(64, 163, 7); color: white"
+                >
+                  Add it to processed_states.
+                </li>
+                <br />
+                <li
+                  class="list-group-item list-group-item-light"
+                  style="background-color: rgb(64, 163, 7); color: white"
+                >
+                For each symbol in the alphabet:
+                Find the next state by checking RG productions.
+                If the next state is not in the union of processed_states and unprocessed_states, add it to unprocessed_states.
+                Add the transition to the transitions dictionary.
+                If the next state is an empty string, add the current state to the accept states of the DFA.
+                </li>
+                <br />
+                <li
+                  class="list-group-item list-group-item-light"
+                  style="background-color: rgb(64, 163, 7); color: white"
+                >
+                Set the states of the DFA to the list of processed states.
+                </li>
+                <br />
+                <li
+                  class="list-group-item list-group-item-light"
+                  style="background-color: rgb(64, 163, 7); color: white"
+                >
+                Return the DFA dictionary.
+                </li>
+                <br />
+              </ol>
+  
+              <form action="/enfa_visualize" method="POST">
+                <h1 class="text-dark" style="font-size: 50px">
+                  Let's try Visualising
+                </h1>
+                <br />
+                <!-- Default: E-NFA: 0*1*2* -->
+                <div class="mb-3">
+                  <label class="form-label text-dark"
+                    >Enter the list of variables:</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    name="states"
+                   
+                  />
+                </div>
+                <br />
+                <div class="mb-3">
+                  <label class="form-label text-dark"
+                    >Enter the list of terminals:</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    name="alphabets"
+                  
+                  />
+                </div>
+                <br />
+                <div class="mb-3">
+                  <label class="form-label text-dark"
+                    >Enter the productions:</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    name="transitions"
+                   
+                  />
+                </div>
+                <br />
+                <div class="mb-3">
+                  <label class="form-label text-dark"
+                    >Enter the start variable:</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    name="start"
+                  />
+                </div>
+                <br />
+  
+                <button type="submit" class="btn btn-primary">Submit</button>
+              </form>
+            </div>
+          </div>
+
+
+
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-8 bg-blue p-4">
+              <h1 class="text-dark text-center" style="font-size: 20px">
+                <b>Steps for Creating a Graphviz Representation of a PDA</b>
+              </h1>
+              <ol class="list-group list-group-numbered">
+                <li
+                  class="list-group-item list-group-item-light"
+                  style="background-color: rgb(13, 164, 219); color: white"
+                >
+                Initialize a Graphviz Digraph object to represent the PDA.
+                </li>
+                <br />
+                <li
+                  class="list-group-item list-group-item-light"
+                  style="background-color: rgb(13, 164, 219); color: white"
+                >
+                Add nodes for each state, with accepting states represented as double circles.
+                </li>
+                <br />
+                <li
+                  class="list-group-item list-group-item-light"
+                  style="background-color: rgb(13, 164, 219); color: white"
+                >
+                Add edges for transitions, where each edge represents a transition from one state to another based on the input symbol and stack symbol. If there are multiple next states for a transition, create separate edges for each next state.
+                </li>
+                <br />
+                <li
+                  class="list-group-item list-group-item-light"
+                  style="background-color: rgb(13, 164, 219); color: white"
+                >
+                Highlight the start state node by changing its shape and color.
+                </li>
+                <br />
+                <li
+                  class="list-group-item list-group-item-light"
+                  style="background-color: rgb(13, 164, 219); color: white"
+                >
+                Return the Graphviz object representing the PDA.
+                </li>
+                <br />
+              </ol>
+  
+              <form action="/dfa_visualize" method="POST">
+                <h1 class="text-dark" style="font-size: 50px">
+                  Let's try Visualising
+                </h1>
+                <br />
+                <!-- Default: DFA to accept substring "aba" -->
+                <div class="mb-3">
+                  <label class="form-label text-dark"
+                    >Enter the states (comma-separated):</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    name="states"
+                    
+                  />
+                </div>
+                <br />
+                <div class="mb-3">
+                  <label class="form-label text-dark"
+                    >Enter the input alphabets:</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    name="alphabets"
+                  
+                  />
+                </div>
+                <br/>
+                <div class="mb-3">
+                  <label class="form-label text-dark"
+                    >Enter the stack alphabet:</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    name="transitions"
+                   
+                  />
+                </div>
+                <br />
+                <div class="mb-3">
+                  <label class="form-label text-dark"
+                    >Enter the transitions (semicolon-separated):</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    name="transitions"
+                   
+                  />
+                </div>
+                <br />
+                <div class="mb-3">
+                  <label class="form-label text-dark"
+                    >Enter the start state:</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    name="start"
+                  />
+                </div>
+                <br />
+
+                <div class="mb-3">
+                  <label class="form-label text-dark"
+                    >Enter the start stack symbol:</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    name="start"
+             
+                  />
+                </div>
+                <br />
+                <div class="mb-3">
+                  <label class="form-label text-dark"
+                    >Enter the final state(s):</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    name="final"
+                 
+                  />
+                </div>
+                <!-- Input string -->
+                <div class="mb-3">
+                  <label class="form-label text-dark"
+                    >Enter an example input string:</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    name="input_string"
+                  
+                  />
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+              </form>
+            </div>
+          </div>
+
+
+
     </main>
 
     <!-- ======= Footer ======= -->
