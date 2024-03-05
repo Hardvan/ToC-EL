@@ -1,0 +1,15 @@
+digraph {
+	q0 [shape=circle]
+	q1 [shape=circle]
+	q2 [shape=circle]
+	qf [shape=doublecircle]
+	q0 -> q1 [label=a]
+	q0 -> q0 [label=b]
+	q1 -> q1 [label=a]
+	q1 -> q2 [label=b]
+	q2 -> qf [label=a]
+	q2 -> q0 [label=b]
+	qf -> qf [label=a]
+	qf -> qf [label=b]
+	q0 [fillcolor=lightblue shape=circle style=filled]
+}
