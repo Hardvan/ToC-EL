@@ -12,7 +12,8 @@ app = Flask(__name__)
 def index():
     return render_template("index.html")
 
-@app.route('/pda_visualize', methods = ['POST'])
+
+@app.route('/pda_visualize', methods=['POST'])
 def pda_visualize():
     states = request.form['states']
     alphabet = request.form['alphabets']
@@ -22,8 +23,9 @@ def pda_visualize():
     start_stack = request.form['start_stack']
     accept_states = request.form['final']
 
-    pda = preprocess_pda(states, alphabet, stack_alphabet, transitions, start_state, start_stack, accept_states)
-    print(pda)    
+    pda = preprocess_pda(states, alphabet, stack_alphabet,
+                         transitions, start_state, start_stack, accept_states)
+    print(pda)
 
     graph = visualizer.visualize_pda(pda)
     save_path_pda = 'static/output/pda/pda_visualization'
@@ -31,49 +33,10 @@ def pda_visualize():
     graph.render(save_path_pda, cleanup=True)
     print(f"\n✅ PDA visualization saved to {save_path_pda}.png")
 
-    return render_template('index.html', pda_visualization = f"{save_path_pda}.png")
-
-def preprocess_pda(states, alphabet, stack_alphabet, transitions, start_state, start_stack, accept_states):
-    states = states.split(',') 
-    states = [v.strip() for v in states]
-
-    alphabet = alphabet.split(',')  # ['a', ' b']
-    alphabet = [t.strip() for t in alphabet]  # ['a', 'b']
-
-    stack_alphabet = stack_alphabet.split(',') 
-    stack_alphabet = [v.strip() for v in stack_alphabet]
-
-    transitions = transitions.split(';')
-    transitions = [t.strip() for t in transitions]
-    transitions = [t.split(',') for t in transitions]
-    transitions = [[t.strip() for t in transition]
-                   for transition in transitions]
-    transitions_dict = {}
-    for t in transitions:
-        transitions_dict[(t[0], t[1], t[2])] = [(t[3], t[4])]
-
-    start_state = start_state.strip()
-
-    start_stack = start_stack.strip()
-
-    accept_states = accept_states.split(',') 
-    accept_states = [v.strip() for v in accept_states]
-
-    pda = {
-        'states': states,
-        'alphabet': alphabet,
-        'stack_alphabet': stack_alphabet,
-        'transitions': transitions_dict,
-        'start_state': start_state,
-        'start_stack': start_stack,
-        'accept_states': accept_states
-    }
-
-    return pda
+    return render_template('index.html', pda_visualization=f"{save_path_pda}.png")
 
 
-
-@app.route('/rg_visualize', methods = ['POST'])
+@app.route('/rg_visualize', methods=['POST'])
 def rg_visualize():
     states = request.form['states']  # q0, q1, q2, qf
     alphabets = request.form['alphabets']  # a, b
@@ -97,9 +60,10 @@ def rg_visualize():
     save_path_rg = 'static/output/rg/rg_visualization'
     graph.render(save_path_rg, cleanup=True)
     print(f"\n✅ RG visualization saved to {save_path_rg}.png")
-    return render_template('index.html', dfa_visualization_conv = f"{save_path_dfa}.png", rg_visualization_conv = f"{save_path_rg}.png")
+    return render_template('index.html', dfa_visualization_conv=f"{save_path_dfa}.png", rg_visualization_conv=f"{save_path_rg}.png")
 
-@app.route('/rg_dfa_visualize', methods = ['POST'])
+
+@app.route('/rg_dfa_visualize', methods=['POST'])
 def rg_dfa_visualize():
     variables = request.form['variables']
     terminals = request.form['terminals']
@@ -120,38 +84,7 @@ def rg_dfa_visualize():
     graph.render(save_path_dfa, cleanup=True)
     print(f"\n✅ DFA visualization saved to {save_path_dfa}.png")
 
-    return render_template('index.html', dfa_visualization_rev = f"{save_path_dfa}.png", rg_visualization_rev = f"{save_path_rg}.png")
-
-def preprocess_rg(variables, terminals, productions, start):
-    variables = variables.split(',') 
-    variables = [v.strip() for v in variables] 
-
-    terminals = terminals.split(',')  # ['a', ' b']
-    terminals = [t.strip() for t in terminals]  # ['a', 'b']
-
-    productions = productions.split(';')
-    productions = [t.strip() for t in productions]
-    productions = [t.split(',') for t in productions]
-    productions = [[t.strip() for t in production]
-                   for production in productions]
-    productions_dict = {}
-    for t in productions:
-        productions_dict[t[0]] = t[1:]
-
-
-    start = start.strip()  # 'S'
-
-    rg = {
-        'variables': variables,
-        'terminals': terminals,
-        'productions': productions_dict,
-        'start_variable': start
-    }
-
-    print(f"DFA: {rg}")
-
-    return rg
-
+    return render_template('index.html', dfa_visualization_rev=f"{save_path_dfa}.png", rg_visualization_rev=f"{save_path_rg}.png")
 
 
 @app.route('/dfa_visualize', methods=['POST'])
@@ -394,6 +327,75 @@ def preprocess_enfa(states, alphabets, transitions, start, final):
     print(f"e-NFA: {e_nfa}")
 
     return e_nfa
+
+
+def preprocess_pda(states, alphabet, stack_alphabet, transitions, start_state, start_stack, accept_states):
+    states = states.split(',')
+    states = [v.strip() for v in states]
+
+    alphabet = alphabet.split(',')  # ['a', ' b']
+    alphabet = [t.strip() for t in alphabet]  # ['a', 'b']
+
+    stack_alphabet = stack_alphabet.split(',')
+    stack_alphabet = [v.strip() for v in stack_alphabet]
+
+    transitions = transitions.split(';')
+    transitions = [t.strip() for t in transitions]
+    transitions = [t.split(',') for t in transitions]
+    transitions = [[t.strip() for t in transition]
+                   for transition in transitions]
+    transitions_dict = {}
+    for t in transitions:
+        transitions_dict[(t[0], t[1], t[2])] = [(t[3], t[4])]
+
+    start_state = start_state.strip()
+
+    start_stack = start_stack.strip()
+
+    accept_states = accept_states.split(',')
+    accept_states = [v.strip() for v in accept_states]
+
+    pda = {
+        'states': states,
+        'alphabet': alphabet,
+        'stack_alphabet': stack_alphabet,
+        'transitions': transitions_dict,
+        'start_state': start_state,
+        'start_stack': start_stack,
+        'accept_states': accept_states
+    }
+
+    return pda
+
+
+def preprocess_rg(variables, terminals, productions, start):
+    variables = variables.split(',')
+    variables = [v.strip() for v in variables]
+
+    terminals = terminals.split(',')  # ['a', ' b']
+    terminals = [t.strip() for t in terminals]  # ['a', 'b']
+
+    productions = productions.split(';')
+    productions = [t.strip() for t in productions]
+    productions = [t.split(',') for t in productions]
+    productions = [[t.strip() for t in production]
+                   for production in productions]
+    productions_dict = {}
+    for t in productions:
+        productions_dict[t[0]] = t[1:]
+
+    start = start.strip()  # 'S'
+
+    rg = {
+        'variables': variables,
+        'terminals': terminals,
+        'productions': productions_dict,
+        'start_variable': start
+    }
+
+    print(f"DFA: {rg}")
+
+    return rg
 
 
 if __name__ == "__main__":
